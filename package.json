@@ -1,6 +1,6 @@
 {
     "name": "se.his.uv-geometry",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "displayName": "UV Geometry",
     "description": "Custom Unity Package.",
     "unity": "2021.2",
