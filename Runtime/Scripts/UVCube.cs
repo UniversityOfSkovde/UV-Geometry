@@ -54,19 +54,17 @@ namespace se.his.geometry {
         }
     
         void OnEnable() {
+            if (Application.isPlaying) {
+                return;
+            }
+
             if (!TryGetComponent(out _filter)) {
                 Debug.LogError("Could not find MeshFilter-component on UVCube");
                 return;
             }
             
-            
-    
-            if (_filter.sharedMesh == null) {
-                _mesh = new Mesh{ name = "UV Cube" };
-                _filter.sharedMesh = _mesh;
-            } else {
-                _mesh = _filter.sharedMesh;
-            }
+            _mesh = new Mesh{ name = "UV Cube" };
+            _filter.sharedMesh = _mesh;
             _mesh.MarkDynamic();
         }
     
