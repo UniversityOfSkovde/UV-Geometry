@@ -12,7 +12,7 @@ consistent texture detail across the scene.
 2. Open Unity and open the Package Manager (located under `Window -> Package Manager`)
 3. Press the `+` icon and select `Add Package From git URL...`
 4. Enter the URL: `https://github.com/UniversityOfSkovde/UV-Geometry.git` and press `Add`
-5. You can now find the plugin in the top menu under `DSU -> Create New Package`
+5. You can now start using the package!
 
 ## Usage
 Create an empty game object in the scene and add the "UV Cube" component to it. It should generate a Mesh Filter and Mesh Renderer automatically.
