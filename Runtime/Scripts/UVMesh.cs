@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace se.his.geometry {
     [ExecuteInEditMode, RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
@@ -59,6 +60,7 @@ namespace se.his.geometry {
             }
             
             _mesh = new Mesh{ name = "UV Cube" };
+            _mesh.indexFormat = IndexFormat.UInt32;
             _mesh.MarkDynamic();
             _filter.sharedMesh = _mesh;
         }

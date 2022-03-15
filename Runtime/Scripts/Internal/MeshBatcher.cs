@@ -176,6 +176,9 @@ namespace se.his.geometry {
             }
             
             mesh.Clear();
+            if (vertexList.Count >= ushort.MaxValue) {
+                mesh.indexFormat = IndexFormat.UInt32;
+            }
             mesh.SetVertices(vertexList);
             mesh.SetNormals(normalList);
             mesh.SetUVs(0, texCoordList);
