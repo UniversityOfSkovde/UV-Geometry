@@ -32,9 +32,13 @@ namespace se.his.geometry {
         [Tooltip("Prefab that will be scanned for MeshFilter/MeshRenderer pairs to build the mesh and material list of this object")]
         [SerializeField] private GameObject Prefab;
 
+        [Tooltip("Should textures stretch or should they have seams")]
+        [SerializeField] private bool StretchTextures;
+        
         private MeshFilter _filter;
         private MeshRenderer _meshRenderer;
         private Mesh _mesh;
+        
         
         #if UNITY_EDITOR
         void Start() {
@@ -59,7 +63,7 @@ namespace se.his.geometry {
                 return;
             }
             
-            _mesh = new Mesh{ name = "UV Cube" };
+            _mesh = new Mesh{ name = "UV Mesh" };
             _mesh.indexFormat = IndexFormat.UInt32;
             _mesh.MarkDynamic();
             _filter.sharedMesh = _mesh;
@@ -118,6 +122,9 @@ namespace se.his.geometry {
                         result.Add(loaded, vertexMatrix, tri => {
                             var n = (tri.V0.Normal + tri.V1.Normal + tri.V2.Normal) / 3.0f;
                 
+                            if (StretchTextures)
+                                return Matrix4x4.identity;
+                            
                             if (Mathf.Abs(n.x) > Mathf.Abs(n.y)) {
                                 
                                 // YZ
@@ -129,9 +136,9 @@ namespace se.his.geometry {
                                 }
                     
                                 // XY
-                                return Matrix4x4.Translate(new Vector3(.5f, .5f, 0)) *
+                                return Matrix4x4.Translate(-new Vector3(i, j, k) + 0.5f * (Vector3) (tileCount - Vector3Int.one)) *
                                        Matrix4x4.Scale(new Vector3(actualScale.x, actualScale.y, 1)) * 
-                                       Matrix4x4.Translate(new Vector3(-.5f, -.5f, 0));
+                                       Matrix4x4.Translate(new Vector3(i, j, k) - 0.5f * (Vector3) (tileCount - Vector3Int.one));
                             }
                 
                             // XZ
@@ -142,9 +149,9 @@ namespace se.his.geometry {
                             }
                 
                             // XY
-                            return Matrix4x4.Translate(new Vector3(.5f, .5f, 0)) *
+                            return Matrix4x4.Translate(-new Vector3(i, j, k) + 0.5f * (Vector3) (tileCount - Vector3Int.one)) *
                                    Matrix4x4.Scale(new Vector3(actualScale.x, actualScale.y, 1)) * 
-                                   Matrix4x4.Translate(new Vector3(-.5f, -.5f, 0));
+                                   Matrix4x4.Translate(new Vector3(i, j, k) - 0.5f * (Vector3) (tileCount - Vector3Int.one));
                         });
                     }
                 }
