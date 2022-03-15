@@ -4,7 +4,7 @@ consistent texture detail across the scene.
 
 ![Image showing scalable UV cubes](https://media.githubusercontent.com/media/UniversityOfSkovde/UV-Geometry/main/Documentation~/uv-cubes.gif)
 
-![Image showing a custom mesh with dynamic UV coordinates](https://media.githubusercontent.com/media/UniversityOfSkovde/UV-Geometry/main/Documentation~/uv-meshes.gif)
+![Image showing a custom mesh with dynamic UV coordinates](https://media.githubusercontent.com/media/UniversityOfSkovde/UV-Geometry/main/Documentation~/uv-meshes2.gif)
 
 
 ## Installation
