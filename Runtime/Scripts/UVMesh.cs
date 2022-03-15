@@ -30,7 +30,7 @@ namespace se.his.geometry {
 
         [Tooltip("Prefab that will be scanned for MeshFilter/MeshRenderer pairs to build the mesh and material list of this object")]
         [SerializeField] private GameObject Prefab;
-        
+
         private MeshFilter _filter;
         private MeshRenderer _meshRenderer;
         private Mesh _mesh;
@@ -70,33 +70,83 @@ namespace se.his.geometry {
             
             var t = transform;
             var scale = t.localScale;
+            var (min, max) = loaded.Bounds;
+            var tileSize = max - min;
+            var tileSizeInv = new Vector3(
+                1.0f / tileSize.x,
+                1.0f / tileSize.y,
+                1.0f / tileSize.z
+            );
             
-            result.Add(loaded, Matrix4x4.identity, tri => {
-                var n = (tri.V0.Normal + tri.V1.Normal + tri.V2.Normal) / 3.0f;
+            var tileCount = new Vector3Int(
+                Math.Max(1, Mathf.RoundToInt(scale.x)),
+                Math.Max(1, Mathf.RoundToInt(scale.y)),
+                Math.Max(1, Mathf.RoundToInt(scale.z))
+            );
+            var tileCountInv = new Vector3(
+                1.0f / tileCount.x,
+                1.0f / tileCount.y,
+                1.0f / tileCount.z
+            );
+
+            var totalSize = Vector3.Scale(tileCount, tileSize);
+            var scaleAdjust = new Vector3(
+                1.0f / scale.x,
+                1.0f / scale.y,
+                1.0f / scale.z
+            );
+
+            var actualScale = new Vector3(
+                scale.x / tileCount.x,
+                scale.y / tileCount.y,
+                scale.z / tileCount.z
+            );
+
+            for (var i = 0; i < tileCount.x; i++) {
+                for (var j = 0; j < tileCount.y; j++) {
+                    for (var k = 0; k < tileCount.z; k++) {
+                        var vertexMatrix =
+                            Matrix4x4.Scale(tileCountInv) *
+                            Matrix4x4.Translate(min) *
+                            Matrix4x4.Scale(tileSize) *
+                            Matrix4x4.Translate(new Vector3(i, j, k) - 0.5f * (Vector3) (tileCount - Vector3Int.one)) *
+                            Matrix4x4.Scale(tileSizeInv) *
+                            Matrix4x4.Translate(-min);
+                        
+                        result.Add(loaded, vertexMatrix, tri => {
+                            var n = (tri.V0.Normal + tri.V1.Normal + tri.V2.Normal) / 3.0f;
                 
-                if (Mathf.Abs(n.x) > Mathf.Abs(n.y)) {
-                    if (Mathf.Abs(n.x) > Mathf.Abs(n.z)) {
-                        return 
-                            Matrix4x4.Translate(new Vector3(.5f, .5f, 0)) *
-                            Matrix4x4.Scale(new Vector3(scale.z, scale.y, 1)) * 
-                            Matrix4x4.Translate(new Vector3(-.5f, -.5f, 0));
-                    } else { // XY
-                        return Matrix4x4.Translate(new Vector3(.5f, .5f, 0)) *
-                               Matrix4x4.Scale(new Vector3(scale.x, scale.y, 1)) * 
-                               Matrix4x4.Translate(new Vector3(-.5f, -.5f, 0));
-                    }
-                } else {
-                    if (Mathf.Abs(n.y) > Mathf.Abs(n.z)) {
-                        return Matrix4x4.Translate(new Vector3(.5f, .5f, 0)) *
-                               Matrix4x4.Scale(new Vector3(scale.x, scale.z, 1)) * 
-                               Matrix4x4.Translate(new Vector3(-.5f, -.5f, 0));
-                    } else { // XY
-                        return Matrix4x4.Translate(new Vector3(.5f, .5f, 0)) *
-                               Matrix4x4.Scale(new Vector3(scale.x, scale.y, 1)) * 
-                               Matrix4x4.Translate(new Vector3(-.5f, -.5f, 0));
+                            if (Mathf.Abs(n.x) > Mathf.Abs(n.y)) {
+                                
+                                // YZ
+                                if (Mathf.Abs(n.x) > Mathf.Abs(n.z)) { 
+                                    return 
+                                        Matrix4x4.Translate(new Vector3(.5f, .5f, 0)) *
+                                        Matrix4x4.Scale(new Vector3(actualScale.z, actualScale.y, 1)) * 
+                                        Matrix4x4.Translate(new Vector3(-.5f, -.5f, 0));
+                                }
+                    
+                                // XY
+                                return Matrix4x4.Translate(new Vector3(.5f, .5f, 0)) *
+                                       Matrix4x4.Scale(new Vector3(actualScale.x, actualScale.y, 1)) * 
+                                       Matrix4x4.Translate(new Vector3(-.5f, -.5f, 0));
+                            }
+                
+                            // XZ
+                            if (Mathf.Abs(n.y) > Mathf.Abs(n.z)) { 
+                                return Matrix4x4.Translate(new Vector3(.5f, .5f, 0)) *
+                                       Matrix4x4.Scale(new Vector3(actualScale.x, actualScale.z, 1)) * 
+                                       Matrix4x4.Translate(new Vector3(-.5f, -.5f, 0));
+                            }
+                
+                            // XY
+                            return Matrix4x4.Translate(new Vector3(.5f, .5f, 0)) *
+                                   Matrix4x4.Scale(new Vector3(actualScale.x, actualScale.y, 1)) * 
+                                   Matrix4x4.Translate(new Vector3(-.5f, -.5f, 0));
+                        });
                     }
                 }
-            });
+            }
 
             var materials = new List<Material>();
             result.Build(_mesh, materials);

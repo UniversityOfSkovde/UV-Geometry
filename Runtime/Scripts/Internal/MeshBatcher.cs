@@ -33,8 +33,36 @@ namespace se.his.geometry {
 
         private List<int> SubMeshes => materials.Keys.OrderBy(i => i).ToList();
         private List<(int SubMesh, Material Material)> Materials => materials.OrderBy(p => p.Key).Select(p => (p.Key, p.Value)).ToList();
-
+        
         private int nextSubMesh = 1;
+
+        public (Vector3 Min, Vector3 Max) Bounds {
+            get {
+                var min = Vector3.zero;
+                var max = Vector3.zero;
+                var first = true;
+                foreach (var subMesh in vertices.Values) {
+                    for (var i = 0; i < subMesh.Count; i++) {
+                        var pos = subMesh[i].Position;
+                        if (first) {
+                            min = pos;
+                            max = pos;
+                            first = false;
+                            continue;
+                        }
+
+                        if (pos.x < min.x) min.x = pos.x;
+                        if (pos.y < min.y) min.y = pos.y;
+                        if (pos.z < min.z) min.z = pos.z;
+                        if (pos.x > max.x) max.x = pos.x;
+                        if (pos.y > max.y) max.y = pos.y;
+                        if (pos.z > max.z) max.z = pos.z;
+                    }
+                }
+
+                return (min, max);
+            }
+        }
         private int GetAndIncrementNextSubMesh() => nextSubMesh++;
         
         public MeshBatcher() {
