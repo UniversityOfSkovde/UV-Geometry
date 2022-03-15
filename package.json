@@ -1,0 +1,13 @@
+{
+    "name": "se.his.uv-geometry",
+    "version": "1.0.0",
+    "displayName": "UV Geometry",
+    "description": "Custom Unity Package.",
+    "unity": "2021.2",
+    "dependencies": {},
+    "keywords": ["dsu", "skövde"],
+    "author": {
+        "name": "Emil Forslund",
+        "email": "emil.forslund@his.se"
+    }
+}
