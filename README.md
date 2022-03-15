@@ -2,7 +2,10 @@
 Generate cubes inside Unity with UV-maps that scale with the object for 
 consistent texture detail across the scene.
 
-![Image showing the rendered vectors in the Scene View](https://media.githubusercontent.com/media/UniversityOfSkovde/UV-Geometry/main/Documentation~/uv-cubes.gif)
+![Image showing scalable UV cubes](https://media.githubusercontent.com/media/UniversityOfSkovde/UV-Geometry/main/Documentation~/uv-cubes.gif)
+
+![Image showing a custom mesh with dynamic UV coordinates](https://media.githubusercontent.com/media/UniversityOfSkovde/UV-Geometry/main/Documentation~/uv-meshes.gif)
+
 
 ## Installation
 1. Make sure you have the following software installed:
