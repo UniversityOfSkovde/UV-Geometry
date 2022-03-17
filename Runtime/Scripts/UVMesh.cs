@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -35,12 +36,17 @@ namespace se.his.geometry {
         [Tooltip("Should textures stretch or should they have seams")]
         [SerializeField] private bool StretchTextures;
         
+        [Tooltip("Regenerate every frame or only when the button is pressed")]
+        [SerializeField] public bool RegenerateAutomatically;
+        
         private MeshFilter _filter;
         private MeshRenderer _meshRenderer;
         private Mesh _mesh;
 
         [NonSerialized] private bool _requireUpdate = true;
         [NonSerialized] private Vector3 _previousScale = Vector3.zero;
+        [SerializeField, HideInInspector] private Vector3 _originalSize;
+        [SerializeField, HideInInspector] private Vector3 _originalOffset;
 
 #if UNITY_EDITOR
         void Start() {
@@ -73,14 +79,58 @@ namespace se.his.geometry {
             _filter.sharedMesh = _mesh;
         }
 
+        private void OnValidate() {
+            if (RegenerateAutomatically) {
+                _requireUpdate = true;
+            }
+        }
+
         void Update() {
             if (Prefab == null) return;
-            if (_requireUpdate || transform.localScale != _previousScale) {
+            if (_requireUpdate || (RegenerateAutomatically && transform.localScale != _previousScale)) {
                 RegenerateGeometry();
             }
         }
 
+        private const float LineThickness = 2.0f;
+        private void OnDrawGizmosSelected() {
+            Handles.color = Color.gray;
+            
+            var t = transform;
+            var p = t.position + t.rotation * _originalOffset;
+            var s = 0.5f * Vector3.Scale(_originalSize, t.localScale);
+            var x = t.right * s.x;
+            var y = t.up * s.y;
+            var z = t.forward * s.z;
+            
+            DrawLines(new [] {
+                p - x - y - z,
+                p + x - y - z,
+                p + x - y + z,
+                p - x - y + z
+            });
+            
+            DrawLines(new [] {
+                p - x + y - z,
+                p + x + y - z,
+                p + x + y + z,
+                p - x + y + z
+            });
+            
+            Handles.DrawLine(p - x - y - z, p - x + y - z, LineThickness);
+            Handles.DrawLine(p + x - y - z, p + x + y - z, LineThickness);
+            Handles.DrawLine(p + x - y + z, p + x + y + z, LineThickness);
+            Handles.DrawLine(p - x - y + z, p - x + y + z, LineThickness);
+        }
+
+        private void DrawLines(Vector3[] lines) {
+            for (var i = 0; i < lines.Length; i++) {
+                Handles.DrawLine(lines[i], lines[(i + 1) % lines.Length], LineThickness);
+            }
+        }
+
         public void RegenerateGeometry() {
+            if (Prefab == null) return;
             _requireUpdate = false;
             
             var result = new MeshBatcher();
@@ -90,6 +140,9 @@ namespace se.his.geometry {
             var scale = t.localScale;
             var (min, max) = loaded.Bounds;
             var tileSize = max - min;
+            _originalSize = tileSize;
+            _originalOffset = min + 0.5f * tileSize;
+            
             var tileSizeInv = new Vector3(
                 1.0f / tileSize.x,
                 1.0f / tileSize.y,

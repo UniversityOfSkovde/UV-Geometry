@@ -16,9 +16,11 @@ namespace se.his.geometry {
 
         public override void OnInspectorGUI() {
             base.OnInspectorGUI();
-            EditorGUILayout.Space();
-            if (GUILayout.Button("Regenerate Geometry")) {
-                UpdateAllTargeted(true);
+            if (targets.OfType<UVMesh>().Any(m => !m.RegenerateAutomatically)) {
+                EditorGUILayout.Space();
+                if (GUILayout.Button("Regenerate Geometry")) {
+                    UpdateAllTargeted(true);
+                }
             }
         }
 
