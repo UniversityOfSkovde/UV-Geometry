@@ -38,14 +38,18 @@ namespace se.his.geometry {
         private MeshFilter _filter;
         private MeshRenderer _meshRenderer;
         private Mesh _mesh;
-        
-        
-        #if UNITY_EDITOR
+
+        [NonSerialized] private bool _requireUpdate = true;
+        [NonSerialized] private Vector3 _previousScale = Vector3.zero;
+
+#if UNITY_EDITOR
         void Start() {
             if (Application.isPlaying) {
                 Destroy(this);
                 return;
             }
+
+            _previousScale = transform.localScale;
         }
 
         void OnEnable() {
@@ -71,6 +75,14 @@ namespace se.his.geometry {
 
         void Update() {
             if (Prefab == null) return;
+            if (_requireUpdate || transform.localScale != _previousScale) {
+                RegenerateGeometry();
+            }
+        }
+
+        public void RegenerateGeometry() {
+            _requireUpdate = false;
+            
             var result = new MeshBatcher();
             var loaded = MeshBatcher.LoadFrom(Prefab);
             
@@ -93,13 +105,6 @@ namespace se.his.geometry {
                 1.0f / tileCount.x,
                 1.0f / tileCount.y,
                 1.0f / tileCount.z
-            );
-
-            var totalSize = Vector3.Scale(tileCount, tileSize);
-            var scaleAdjust = new Vector3(
-                1.0f / scale.x,
-                1.0f / scale.y,
-                1.0f / scale.z
             );
 
             var actualScale = new Vector3(
