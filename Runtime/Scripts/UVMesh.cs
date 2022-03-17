@@ -117,16 +117,24 @@ namespace se.his.geometry {
                 p - x + y + z
             });
             
-            Handles.DrawLine(p - x - y - z, p - x + y - z, LineThickness);
-            Handles.DrawLine(p + x - y - z, p + x + y - z, LineThickness);
-            Handles.DrawLine(p + x - y + z, p + x + y + z, LineThickness);
-            Handles.DrawLine(p - x - y + z, p - x + y + z, LineThickness);
+            DrawLine(p - x - y - z, p - x + y - z);
+            DrawLine(p + x - y - z, p + x + y - z);
+            DrawLine(p + x - y + z, p + x + y + z);
+            DrawLine(p - x - y + z, p - x + y + z);
         }
 
         private void DrawLines(Vector3[] lines) {
             for (var i = 0; i < lines.Length; i++) {
-                Handles.DrawLine(lines[i], lines[(i + 1) % lines.Length], LineThickness);
+                DrawLine(lines[i], lines[(i + 1) % lines.Length]);
             }
+        }
+
+        private void DrawLine(Vector3 from, Vector3 to) {
+            #if UNITY_2020_3_OR_NEWER
+            Handles.DrawLine(from, to, LineThickness);
+            #else
+            Handles.DrawLine(from, to);
+            #endif
         }
 
         public void RegenerateGeometry() {
