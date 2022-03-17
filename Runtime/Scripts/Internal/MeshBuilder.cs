@@ -24,15 +24,16 @@ using UnityEngine;
 
 namespace se.his.geometry {
     public class MeshBuilder {
-        private readonly List<Vector3> vertices = new();
-        private readonly List<Vector3> normals = new();
-        private readonly List<Vector2> uv = new();
-        private readonly List<int> triangles = new();
+        private readonly List<Vector3> vertices = new List<Vector3>();
+        private readonly List<Vector3> normals = new List<Vector3>();
+        private readonly List<Vector2> uv = new List<Vector2>();
+        private readonly List<int> triangles = new List<int>();
     
         public Matrix4x4 VertexMatrix = Matrix4x4.identity;
         public Matrix4x4 TextureMatrix = Matrix4x4.identity;
     
-        private readonly Dictionary<(Vector3, Vector3, Vector2), int> existing = new();
+        private readonly Dictionary<(Vector3, Vector3, Vector2), int> existing = 
+            new Dictionary<(Vector3, Vector3, Vector2), int>();
     
         public int AddVertex(Vector3 position, Vector3 normal, Vector2 uv) {
             var pos = VertexMatrix.MultiplyPoint(position);

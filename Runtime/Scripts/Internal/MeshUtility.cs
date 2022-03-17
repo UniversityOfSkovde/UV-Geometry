@@ -65,13 +65,9 @@ namespace se.his.geometry {
             dest.uv        = src.uv;
             dest.triangles = src.triangles;
             dest.subMeshCount = src.subMeshCount;
-
-            var subMeshes = new List<SubMeshDescriptor>();
             for (int i = 0; i < src.subMeshCount; i++) {
-                subMeshes.Add(src.GetSubMesh(i));
+                dest.SetSubMesh(i, src.GetSubMesh(i));
             }
-            
-            dest.SetSubMeshes(subMeshes);
             dest.bounds = src.bounds;
         }
     }
